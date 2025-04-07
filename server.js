@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html'), (err) => {
         if (err) {
             console.error('Error serving landingpage.html:', err);
-            res.status(404).send('landingpage.html not found');
+            res.status(404).send('landing.html not found');
         }
     });
 });
@@ -60,9 +60,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/payments', paymentRoutes);
 
-// Catch-all route for client-side routing (serves landingpage.html for unmatched routes)
+// Catch-all route for client-side routing (serves landing.html for unmatched routes)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landingpage.html'), (err) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html'), (err) => {
         if (err) {
             console.error('Error serving landingpage.html:', err);
             res.status(404).send('landingpage.html not found');
