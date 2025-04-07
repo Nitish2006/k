@@ -164,9 +164,9 @@
             <a href="/events.html" class="text-2xl font-bold text-white">EventSphere</a>
             <div class="space-x-6">
                 <a href="/admin.html" class="text-lg font-medium text-white hover:text-[var(--primary-blue)]">Admin Dashboard</a>
+                <a href="#" id="logout" class="text-lg font-medium text-white hover:text-[var(--primary-blue)]">Logout</a>
             </div>
-        </div>
-    </nav>
+        </nav>
     <div class="toggle-slider" id="theme-toggle"></div>
     <div class="container mx-auto px-4 pt-24 pb-8 z-10 relative">
         <div class="flex justify-between items-center mb-8">
@@ -176,6 +176,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="event-grid"></div>
     </div>
     <script>
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = '/login.html';
+        }
+
         const eventGrid = document.getElementById('event-grid');
 
         async function fetchEvents() {
@@ -186,7 +190,7 @@
                 renderEvents(events);
             } catch (error) {
                 console.error('Fetch error:', error);
-                eventGrid.innerHTML = `<p class="text-center col-span-full text-red-500">Error: ${error.message}</p>`;
+                eventGrid.innerHTML = `<p class="text-center col-span-full text-red-500">Error loading events: ${error.message}</p>`;
             }
         }
 
@@ -207,6 +211,7 @@
                             <p>Coordinator: ${event.coordinatorName || 'N/A'}</p>
                             <p>Contact: ${event.coordinatorContact || 'N/A'}</p>
                             <p>WhatsApp Group: <a href="${event.whatsappLink || '#'}" target="_blank" class="underline hover:text-[var(--primary-blue)]">${event.whatsappLink ? 'Join' : 'N/A'}</a></p>
+                            <p>PhonePe Screenshot: <a href="${event.phonepeScreenshot || '#'}" target="_blank" class="underline hover:text-[var(--primary-blue)]">${event.phonepeScreenshot ? 'View Screenshot' : 'N/A'}</a></p>
                         </div>
                         <button class="register-btn" data-event="${event.name || 'Unnamed Event'}">Register</button>
                     </div>
@@ -231,6 +236,13 @@
         // Refresh button
         document.getElementById('refresh-btn').addEventListener('click', () => {
             fetchEvents();
+        });
+
+        // Logout functionality
+        document.getElementById('logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = '/login.html';
         });
 
         // Theme toggle
