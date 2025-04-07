@@ -19,9 +19,14 @@ app.use(express.static(path.join(__dirname, 'frontend', 'src', 'pages'), {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded files
 app.use('/components', express.static(path.join(__dirname, 'frontend', 'src', 'components'))); // Serve components directory
 
-// Handle the root route to explicitly serve landing.html
+// Handle the root route to explicitly serve landing.html (correcting to landingpage.html if intended)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html'));
+    res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landingpage.html'), (err) => {
+        if (err) {
+            console.error('Error serving landingpage.html:', err);
+            res.status(404).send('landingpage.html not found');
+        }
+    });
 });
 
 // Explicitly serve admin.html for /admin.html route
@@ -35,6 +40,17 @@ app.get('/admin.html', (req, res) => {
     });
 });
 
+// Explicitly serve events.html for /events.html route
+app.get('/events.html', (req, res) => {
+    const eventsPath = path.join(__dirname, 'frontend', 'src', 'pages', 'events.html');
+    res.sendFile(eventsPath, (err) => {
+        if (err) {
+            console.error('Error serving events.html:', err);
+            res.status(404).send('events.html not found');
+        }
+    });
+});
+
 // Middleware
 app.use(express.json());
 app.use(cors()); // Optional, remove if not needed
@@ -44,9 +60,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/payments', paymentRoutes);
 
-// Catch-all route for client-side routing (serves landing.html for unmatched routes)
+// Catch-all route for client-side routing (serves landingpage.html for unmatched routes)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html'));
+    res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landingpage.html'), (err) => {
+        if (err) {
+            console.error('Error serving landingpage.html:', err);
+            res.status(404).send('landingpage.html not found');
+        }
+    });
 });
 
 const startServer = async () => {
