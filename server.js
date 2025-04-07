@@ -14,14 +14,14 @@ const app = express();
 // Serve static files from 'frontend/src/pages' with landingpage.html as default
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, 'frontend', 'src', 'pages'), {
-    index: 'landingpage.html' // Default index file
+    index: 'landing.html' // Default index file
 }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded files
 app.use('/components', express.static(path.join(__dirname, 'frontend', 'src', 'components'))); // Serve components directory
 
-// Handle the root route to explicitly serve landing.html (correcting to landingpage.html if intended)
+// Handle the root route to explicitly serve landing.html (correcting to landing.html if intended)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landingpage.html'), (err) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html'), (err) => {
         if (err) {
             console.error('Error serving landingpage.html:', err);
             res.status(404).send('landingpage.html not found');
