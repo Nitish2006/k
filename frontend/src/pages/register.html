@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - EventSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background: #1a103d; 
+            overflow: hidden; 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: background 0.5s ease; 
+        }
+        body.light-mode { 
+            background: #f5f3ff; 
+            color: #1f2937; 
+        }
+        .bg-slider { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 1; 
+            overflow: hidden; 
+        }
+        .slides { 
+            display: flex; 
+            width: 300%; 
+            height: 100%; 
+            animation: slide 12s infinite; 
+        }
+        .slide { 
+            width: 33.33%; 
+            height: 100%; 
+            object-fit: cover; 
+            opacity: 0.7; 
+            filter: brightness(70%); 
+        }
+        .form-container { 
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            animation: pulseGlow 2s ease-in-out infinite; 
+            z-index: 2; 
+            backdrop-filter: blur(5px); 
+        }
+        body.light-mode .form-container { 
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3)); 
+            border: 1px solid rgba(0, 0, 0, 0.2); 
+        }
+        .form-input, .form-select { 
+            transition: all 0.3s ease; 
+            background: rgba(31, 41, 55, 0.9); 
+        }
+        body.light-mode .form-input, body.light-mode .form-select { 
+            background: rgba(255, 255, 255, 0.9); 
+            color: #1f2937; 
+        }
+        .form-input:focus, .form-select:focus { 
+            border-color: #ff5733; 
+            box-shadow: 0 0 15px rgba(255, 87, 115, 0.5); 
+            transform: scale(1.02); 
+        }
+        .submit-btn { 
+            background: linear-gradient(90deg, #ff5733, #ff9f0a); 
+            transition: all 0.3s ease; 
+        }
+        body.light-mode .submit-btn { 
+            background: linear-gradient(90deg, #fb923c, #fbbf24); 
+        }
+        .submit-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 20px rgba(255, 87, 115, 0.5); 
+        }
+        .toggle-container { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            z-index: 20; 
+        }
+        .toggle-slider { 
+            width: 60px; 
+            height: 30px; 
+            background: #4b5563; 
+            border-radius: 15px; 
+            position: relative; 
+            cursor: pointer; 
+            transition: background 0.3s ease; 
+        }
+        body.light-mode .toggle-slider { 
+            background: #d1d5db; 
+        }
+        .toggle-slider::before { 
+            content: '☾'; /* Half moon */
+            position: absolute; 
+            width: 26px; 
+            height: 26px; 
+            background: #fff; 
+            border-radius: 50%; 
+            top: 2px; 
+            left: 2px; 
+            transition: all 0.3s ease; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 16px; 
+            color: #1f2937; 
+        }
+        body.light-mode .toggle-slider::before { 
+            content: '☀'; /* Sun */
+            left: 32px; 
+        }
+        @keyframes pulseGlow { 
+            0% { box-shadow: 0 0 10px rgba(255, 87, 115, 0.3); } 
+            50% { box-shadow: 0 0 20px rgba(255, 87, 115, 0.6); } 
+            100% { box-shadow: 0 0 10px rgba(255, 87, 115, 0.3); } 
+        }
+        @keyframes slide { 
+            0% { transform: translateX(0); } 
+            33% { transform: translateX(-33.33%); } 
+            66% { transform: translateX(-66.66%); } 
+            100% { transform: translateX(0); } 
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-slider">
+        <div class="slides">
+            
+                <img src="../components/Event-organizer-for-cultural-shows-768x394.jpg" alt="Registration Desk" class="slide"type="image/jpeg/jpg/webp/avif">
+                
+            
+            
+            
+                
+                <img src="../components/pexels-wendywei-1190297.jpg" alt="Tech Background" class="slide"type="image/jpeg/jpg/webp/avif">
+            
+               
+                <img src="../components/The-Art-of-Successful-Hackathon-Management.webp" alt="Tech Background" class="slide"type="image/jpeg/jpg/webp/avif">
+            
+        </div>
+    </div>
+    <div class="form-container w-full max-w-sm p-8 rounded-xl shadow-2xl">
+        <h2 class="text-3xl font-extrabold text-center mb-6 tracking-tight text-white">Register for EventSphere</h2>
+        <form id="register-form">
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium mb-2 text-gray-200">Username</label>
+                <input type="text" id="username" name="username" class="form-input w-full p-3 rounded-lg text-white border border-gray-700 focus:outline-none" placeholder="Enter your username" required>
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium mb-2 text-gray-200">Password</label>
+                <input type="password" id="password" name="password" class="form-input w-full p-3 rounded-lg text-white border border-gray-700 focus:outline-none" placeholder="Enter your password" required>
+            </div>
+            <div class="mb-4">
+                <label for="regid" class="block text-sm font-medium mb-2 text-gray-200">Registration ID</label>
+                <input type="text" id="regid" name="regid" class="form-input w-full p-3 rounded-lg text-white border border-gray-700 focus:outline-none" placeholder="Enter your registration ID" required>
+            </div>
+            <div class="mb-4">
+                <label for="branch" class="block text-sm font-medium mb-2 text-gray-200">Branch</label>
+                <select id="branch" name="branch" class="form-select w-full p-3 rounded-lg text-white border border-gray-700 focus:outline-none" required>
+                    <option value="" disabled selected>Select your branch</option>
+                    <option value="CSE">Computer Science Engineering</option>
+                    <option value="ECE">Electronics and Communication Engineering</option>
+                    <option value="ME">Mechanical Engineering</option>
+                    <option value="CE">Civil Engineering</option>
+                    <option value="EE">Electrical Engineering</option>
+                    <option value="IT">Information Technology</option>
+                    <option value="Acse-ds">Acse-Ds</option>
+                    <option value="MCA">MCA</option>
+                    <option value="MBA">MBA</option>
+                    <option value="Mtech">Mtech</option>
+                    <option value="Acse-cs">Acse-cs</option>
+                    <option value="Acse-ai">Acse-ai</option>
+                    <option value="Ai&ds">Ai&ds</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                </select>
+            </div>
+            <div class="mb-6">
+                <label for="year" class="block text-sm font-medium mb-2 text-gray-200">Year of Study</label>
+                <select id="year" name="year" class="form-select w-full p-3 rounded-lg text-white border border-gray-700 focus:outline-none" required>
+                    <option value="" disabled selected>Select your year</option>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn w-full py-3 text-white font-semibold rounded-lg">Register Now</button>
+        </form>
+        <p class="text-center mt-4 text-sm text-gray-300">Already have an account? <a href="login.html" id="login-link" class="underline hover:text-orange-400">Login</a></p>
+    </div>
+    <div class="toggle-container">
+        <div class="toggle-slider" id="theme-toggle"></div>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                regid: document.getElementById('regid').value,
+                branch: document.getElementById('branch').value,
+                year: document.getElementById('year').value
+            };
+            localStorage.setItem('userData', JSON.stringify(userData));
+            localStorage.removeItem('isLoggedIn');
+            alert('Registration successful! Please login.');
+            window.location.href = 'login.html?from=register';
+        });
+
+        document.getElementById('login-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn'); // Clear login state to force login
+            window.location.href = 'login.html?from=register';
+        });
+
+        // Theme toggle
+        const toggle = document.getElementById('theme-toggle');
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        });
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+    </script>
+</body>
+</html>

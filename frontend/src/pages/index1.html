@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Event Management - EventSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f9f7f4; /* Fallback color */
+            overflow: hidden;
+            position: relative;
+            margin: 0;
+        }
+        /* Video Background */
+        .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures video fills the screen */
+            z-index: 0;
+            opacity: 0.7; /* Slight transparency for content visibility */
+        }
+        .navbar {
+            background: rgba(255, 111, 97, 0.9); /* Coral with transparency */
+            animation: slideIn 1s ease-out forwards;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #f9f7f4;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #3498db;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .content {
+            animation: fadeInUp 1.5s ease-out forwards;
+            z-index: 5;
+            position: relative;
+        }
+        .title {
+            animation: glowText 3s infinite ease-in-out;
+        }
+        .subtitle {
+            animation: fadeIn 2s ease-out 0.5s forwards;
+            opacity: 0;
+        }
+        .cta-btn {
+            background: #3498db;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .cta-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.4);
+        }
+        /* Keyframes */
+        @keyframes slideIn {
+            0% { transform: translateY(-100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes glowText {
+            0% { text-shadow: 0 0 5px #ff6f61; }
+            50% { text-shadow: 0 0 15px #ff6f61, 0 0 25px #ff6f61; }
+            100% { text-shadow: 0 0 5px #ff6f61; }
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-800">
+    <!-- Video Background -->
+    <video class="video-bg" autoplay muted loop playsinline>
+        <source src="../components/istockphoto-1213415408-640_adpp_is.mp4"type="video/mp4"> controls></video>
+        Your browser does not support the video tag.
+
+    </video>
+
+    <!-- Navbar -->
+    <nav class="navbar fixed top-0 w-full py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="/" class="text-3xl font-extrabold text-white">EventSphere</a>
+            <div class="space-x-8">
+                <a href="/" class="nav-link text-lg font-medium text-white">Home</a>
+                <a href="register.html" class="nav-link text-lg font-medium text-white">Register</a>
+                <a href="login.html" class="nav-link text-lg font-medium text-white">Login</a>
+                <a href="/about" class="nav-link text-lg font-medium text-white">About Us</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 pt-24 pb-8 content flex flex-col items-center justify-center min-h-screen">
+        <h1 class="title text-5xl md:text-6xl font-bold text-center text-ff6f61 mb-6">Welcome to EventSphere</h1>
+        <p class="subtitle text-xl md:text-2xl text-center text-2d3436 max-w-2xl">Your ultimate platform for managing and enjoying college events with ease and excitement.</p>
+        <a href="register.html" class="cta-btn mt-8 py-3 px-6 text-white font-semibold rounded-lg">Get Started</a>
+    </div>
+</body>
+</html>

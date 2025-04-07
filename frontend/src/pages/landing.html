@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Landing Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom animation for moving gradient background */
+        .animated-bg {
+            background: linear-gradient(45deg, #4f46e5, #9333ea, #ec4899, #f97316);
+            background-size: 400% 400%;
+            animation: gradientMotion 15s ease infinite;
+        }
+
+        @keyframes gradientMotion {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+    </style>
+</head>
+<body class="animated-bg flex items-center justify-center min-h-screen">
+    <div class="text-center text-white">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome to Vignan's Eventhub</h1>
+        <p class="text-lg md:text-xl mb-6">Start your journey with us today!</p>
+        <a href="index1.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+            Getting Started
+        </a>
+    </div>
+</body>
+</html>
