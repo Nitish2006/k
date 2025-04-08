@@ -145,6 +145,31 @@
             content: '☀'; 
             left: 32px; 
         }
+        .blog-section { 
+            margin-top: 2rem; 
+            padding: 1.5rem; 
+            background: rgba(15, 23, 42, 0.9); 
+            border-radius: 1rem; 
+            border: 1px solid var(--primary-blue); 
+        }
+        body.light-mode .blog-section { 
+            background: rgba(240, 248, 250, 0.9); 
+            border: 1px solid #ccc; 
+        }
+        .blog-post { 
+            margin-bottom: 2rem; 
+            padding: 1rem; 
+            border-bottom: 1px solid var(--primary-blue); 
+        }
+        body.light-mode .blog-post { 
+            border-bottom: 1px solid #ccc; 
+        }
+        .blog-post img { 
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 0.5rem; 
+            margin-bottom: 1rem; 
+        }
         @media (max-width: 768px) {
             .event-card:hover { 
                 transform: none; 
@@ -154,6 +179,9 @@
             }
             .event-details p { 
                 font-size: 0.85rem; 
+            }
+            .blog-post img { 
+                max-width: 100%; 
             }
         }
     </style>
@@ -174,6 +202,34 @@
             <button id="refresh-btn" class="refresh-btn">Refresh Events</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="event-grid"></div>
+        <!-- Blog Section -->
+        <div class="blog-section">
+            <h2 class="text-3xl font-bold mb-4 text-center">Event Blog Posts</h2>
+            <div class="blog-post">
+                <img src="https://via.placeholder.com/600x300?text=TechFest+2025+Poster" alt="TechFest 2025 Poster">
+                <h3 class="text-2xl font-semibold mb-2">TechFest 2025 at VIIT</h3>
+                <p><strong>Date:</strong> April 15, 2025</p>
+                <p><strong>Time:</strong> 9:00 AM - 5:00 PM</p>
+                <p><strong>Venue:</strong> Vignan Institute of Information Technology, Visakhapatnam</p>
+                <p>Join us for TechFest 2025, an exciting event featuring coding competitions, robotics workshops, and guest lectures by industry experts. This annual tech extravaganza is a must-attend for students passionate about innovation!</p>
+            </div>
+            <div class="blog-post">
+                <img src="https://via.placeholder.com/600x300?text=Hackathon+2025+Poster" alt="Hackathon 2025 Poster">
+                <h3 class="text-2xl font-semibold mb-2">Hackathon 2025 at VIIT</h3>
+                <p><strong>Date:</strong> April 20-21, 2025</p>
+                <p><strong>Time:</strong> 8:00 AM - 6:00 PM (Day 1), 8:00 AM - 4:00 PM (Day 2)</p>
+                <p><strong>Venue:</strong> Vignan Institute of Information Technology, Visakhapatnam</p>
+                <p>The Hackathon 2025 challenges students to solve real-world problems with cutting-edge technology. Expect 24 hours of intense coding, mentorship, and exciting prizes!</p>
+            </div>
+            <div class="blog-post">
+                <img src="https://via.placeholder.com/600x300?text=Cultural+Fest+2025+Poster" alt="Cultural Fest 2025 Poster">
+                <h3 class="text-2xl font-semibold mb-2">Cultural Fest 2025 at VIIT</h3>
+                <p><strong>Date:</strong> April 25, 2025</p>
+                <p><strong>Time:</strong> 10:00 AM - 8:00 PM</p>
+                <p><strong>Venue:</strong> Vignan Institute of Information Technology, Visakhapatnam</p>
+                <p>Celebrate diversity with Cultural Fest 2025, featuring dance performances, music concerts, and a food festival. A perfect blend of tradition and modernity awaits!</p>
+            </div>
+        </div>
     </div>
     <script>
         if (!localStorage.getItem('isLoggedIn')) {
@@ -206,17 +262,17 @@
                 card.innerHTML = `
                     <div class="front">
                         <div class="event-details">
-                            <h2 class="text-2xl font-semibold mb-2">${event.name || 'Unnamed Event'}</h2>
-                            <p>Date: ${event.date ? new Date(event.date).toLocaleDateString() : 'TBD'}</p>
+                            <h2 class="text-2xl font-semibold mb-2">${event.eventName || 'Unnamed Event'}</h2>
+                            <p>Date: ${event.eventDate ? new Date(event.eventDate).toLocaleDateString() : 'TBD'}</p>
                             <p>Coordinator: ${event.coordinatorName || 'N/A'}</p>
                             <p>Contact: ${event.coordinatorContact || 'N/A'}</p>
-                            <p>WhatsApp Group: <a href="${event.whatsappLink || '#'}" target="_blank" class="underline hover:text-[var(--primary-blue)]">${event.whatsappLink ? 'Join' : 'N/A'}</a></p>
-                            <p>PhonePe Screenshot: <a href="${event.phonepeScreenshot || '#'}" target="_blank" class="underline hover:text-[var(--primary-blue)]">${event.phonepeScreenshot ? 'View Screenshot' : 'N/A'}</a></p>
+                            <p>WhatsApp Group: <a href="${event.whatsappGroupLink || '#'}" target="_blank" class="underline hover:text-[var(--primary-blue)]">${event.whatsappGroupLink ? 'Join' : 'N/A'}</a></p>
+                            <p>PhonePe Screenshot: <a href="/uploads/${event.phonePeScreenshot || '#'}" target="_blank" class="underline hover:text-[var(--primary-blue)]">${event.phonePeScreenshot ? 'View Screenshot' : 'N/A'}</a></p>
                         </div>
-                        <button class="register-btn" data-event="${event.name || 'Unnamed Event'}">Register</button>
+                        <button class="register-btn" data-event="${event.eventName || 'Unnamed Event'}">Register</button>
                     </div>
                     <div class="back">
-                        <img src="${event.poster || 'https://via.placeholder.com/500?text=No+Poster+Available'}" alt="${event.name || 'Unnamed Event'} Poster" onerror="this.src='https://via.placeholder.com/500?text=Image+Load+Failed'">
+                        <img src="${event.posterUrl || 'https://via.placeholder.com/500?text=No+Poster+Available'}" alt="${event.eventName || 'Unnamed Event'} Poster" onerror="this.src='https://via.placeholder.com/500?text=Image+Load+Failed'">
                     </div>
                 `;
                 eventGrid.appendChild(card);
