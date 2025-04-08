@@ -6,7 +6,6 @@
     <title>Admin - EventSphere</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Existing styles remain unchanged */
         :root { --primary-blue: #00c4cc; --primary-purple: #a100b2; --bg-dark: radial-gradient(circle at top, #1a252e 0%, #0f172a 70%, #0a101b 100%); }
         body { background: var(--bg-dark); font-family: 'Poppins', sans-serif; min-height: 100vh; color: #e5e7eb; position: relative; }
         .navbar { background: rgba(10, 16, 27, 0.9); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); z-index: 20; }
@@ -48,7 +47,7 @@
                 <div class="mb-3"><label class="block text-sm font-medium mb-1">Coordinator Name</label><input type="text" id="coordinator-name" class="form-input w-full p-2" placeholder="Enter coordinator name" required></div>
                 <div class="mb-3"><label class="block text-sm font-medium mb-1">Coordinator Contact</label><input type="tel" id="coordinator-contact" class="form-input w-full p-2" placeholder="Enter coordinator contact" pattern="[0-9]{10}" required></div>
                 <div class="mb-3"><label class="block text-sm font-medium mb-1">Poster URL</label><input type="url" id="event-poster" class="form-input w-full p-2" placeholder="Enter poster image URL" required></div>
-                <div class="mb-3"><label class="block text-sm font-medium mb-1">PhonePe Screenshot</label><input type="file" name="phonepeScreenshot" id="phonepe-screenshot" class="form-input w-full p-2" accept="image/*" required></div>
+                <div class="mb-3"><label class="block text-sm font-medium mb-1">PhonePe Screenshot</label><input type="file" name="phonePeScreenshot" id="phonepe-screenshot" class="form-input w-full p-2" accept="image/*" required></div>
                 <div class="mb-4"><label class="block text-sm font-medium mb-1">WhatsApp Group Link</label><input type="url" id="whatsapp-link" class="form-input w-full p-2" placeholder="Enter WhatsApp group link" required></div>
                 <button type="submit" class="submit-btn w-full py-2">Add Event</button>
                 <div id="add-error" class="error-message"></div>
@@ -57,6 +56,7 @@
         <div class="mt-6">
             <h2 class="text-2xl font-bold text-center mb-4">Manage Events</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="event-grid"></div>
+            <div id="manage-events-error" class="error-message text-center col-span-full"></div>
         </div>
         <div class="mt-6">
             <h2 class="text-2xl font-bold text-center mb-4">Analytics</h2>
@@ -67,21 +67,13 @@
         </div>
     </div>
     <script>
-        // Authentication check with debug
+        // Get auth token from localStorage
         const token = localStorage.getItem('authToken');
-        if (!token) {
-            console.log('No authToken found, redirecting to login');
-            window.location.href = '/admin-login.html';
-        } else {
-            console.log('authToken:', token); // Debug token
-        }
 
-        const eventGrid = document.getElementById('event-grid');
-        const totalEvents = document.getElementById('total-events');
-        const totalRegistrations = document.getElementById('total-registrations');
-        const addError = document.getElementById('add-error');
-
+        // Fetch Events
         async function fetchEvents() {
+            const eventGrid = document.getElementById('event-grid');
+            const manageEventsError = document.getElementById('manage-events-error');
             try {
                 const response = await fetch('/api/events', {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -92,11 +84,15 @@
                 updateAnalytics();
             } catch (error) {
                 console.error('Fetch error:', error);
-                eventGrid.innerHTML = `<p class="text-center col-span-full text-red-500">Error loading events: ${error.message}</p>`;
+                manageEventsError.textContent = `Error loading events: ${error.message}`;
+                manageEventsError.style.display = 'block';
+                eventGrid.innerHTML = '<p class="text-center col-span-full text-red-500">Failed to load events.</p>';
             }
         }
 
+        // Render Events
         function renderEvents(events) {
+            const eventGrid = document.getElementById('event-grid');
             eventGrid.innerHTML = '';
             if (events.length === 0) {
                 eventGrid.innerHTML = '<p class="text-center col-span-full text-gray-500">No events available.</p>';
@@ -106,13 +102,15 @@
                 const card = document.createElement('div');
                 card.className = 'event-card';
                 card.innerHTML = `
-                    <h3 class="text-lg font-semibold mb-2">${event.name || 'Unnamed Event'}</h3>
-                    <p class="mb-1 text-gray-500">Date: ${new Date(event.date).toLocaleDateString()}</p>
+                    <h3 class="text-lg font-semibold mb-2">${event.eventName || 'Unnamed Event'}</h3>
+                    <p class="mb-1 text-gray-500">Date: ${new Date(event.eventDate).toLocaleDateString()}</p>
                     <p class="mb-1 text-gray-500">Coordinator: ${event.coordinatorName || 'N/A'}</p>
                     <p class="mb-1 text-gray-500">Contact: ${event.coordinatorContact || 'N/A'}</p>
-                    <p class="mb-1 text-gray-500">PhonePe Screenshot: <a href="${event.phonepeScreenshot || '#'}" target="_blank" class="text-primary-blue hover:underline">${event.phonepeScreenshot ? 'View' : 'N/A'}</a></p>
-                    <button class="delete-btn w-full py-2 mt-3" data-id="${event._id || event.id}">Delete</button>
-                    <div id="delete-error-${event._id || event.id}" class="error-message"></div>
+                    <p class="mb-1 text-gray-500">Poster: <a href="${event.posterUrl || '#'}" target="_blank" class="text-primary-blue hover:underline">${event.posterUrl ? 'View' : 'N/A'}</a></p>
+                    <p class="mb-1 text-gray-500">PhonePe Screenshot: <a href="/uploads/${event.phonePeScreenshot || '#'}" target="_blank" class="text-primary-blue hover:underline">${event.phonePeScreenshot ? 'View' : 'N/A'}</a></p>
+                    <p class="mb-1 text-gray-500">WhatsApp: <a href="${event.whatsappGroupLink || '#'}" target="_blank" class="text-primary-blue hover:underline">${event.whatsappGroupLink ? 'Join' : 'N/A'}</a></p>
+                    <button class="delete-btn w-full py-2 mt-3" data-id="${event._id}">Delete</button>
+                    <div id="delete-error-${event._id}" class="error-message"></div>
                 `;
                 eventGrid.appendChild(card);
             });
@@ -140,15 +138,18 @@
             });
         }
 
+        // Update Analytics
         async function updateAnalytics() {
+            const totalEvents = document.getElementById('total-events');
+            const totalRegistrations = document.getElementById('total-registrations');
             try {
                 const response = await fetch('/api/events/analytics', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const { totalEvents: totalEventsCount, totalRegistrations: totalRegistrationsCount } = await response.json();
-                totalEvents.textContent = totalEventsCount;
-                totalRegistrations.textContent = totalRegistrationsCount;
+                totalEvents.textContent = totalEventsCount || 0;
+                totalRegistrations.textContent = totalRegistrationsCount || 0;
             } catch (error) {
                 console.error('Analytics error:', error);
                 totalEvents.textContent = 'Error';
@@ -156,21 +157,22 @@
             }
         }
 
+        // Add Event
         document.getElementById('event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData();
-            formData.append('name', document.getElementById('event-name').value);
-            formData.append('date', document.getElementById('event-date').value);
+            formData.append('eventName', document.getElementById('event-name').value);
+            formData.append('eventDate', document.getElementById('event-date').value);
             formData.append('coordinatorName', document.getElementById('coordinator-name').value);
             formData.append('coordinatorContact', document.getElementById('coordinator-contact').value);
-            formData.append('poster', document.getElementById('event-poster').value);
-            formData.append('whatsappLink', document.getElementById('whatsapp-link').value);
+            formData.append('posterUrl', document.getElementById('event-poster').value);
+            formData.append('whatsappGroupLink', document.getElementById('whatsapp-link').value);
             const fileInput = document.getElementById('phonepe-screenshot');
             if (fileInput.files.length > 0) {
-                formData.append('phonepeScreenshot', fileInput.files[0]);
+                formData.append('phonePeScreenshot', fileInput.files[0]);
             } else {
-                addError.textContent = 'Please upload a PhonePe screenshot.';
-                addError.style.display = 'block';
+                document.getElementById('add-error').textContent = 'Please upload a PhonePe screenshot.';
+                document.getElementById('add-error').style.display = 'block';
                 return;
             }
 
@@ -182,33 +184,34 @@
                 });
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.json();
-                alert('Event added successfully!');
+                alert(data.message || 'Event added successfully!');
                 document.getElementById('event-form').reset();
                 fetchEvents();
-                updateAnalytics();
-                addError.style.display = 'none';
+                document.getElementById('add-error').style.display = 'none';
             } catch (error) {
                 console.error('Submit error:', error);
-                addError.textContent = `Error adding event: ${error.message}`;
-                addError.style.display = 'block';
+                document.getElementById('add-error').textContent = `Error adding event: ${error.message}`;
+                document.getElementById('add-error').style.display = 'block';
             }
         });
 
+        // Logout
         document.getElementById('logout').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('authToken');
             window.location.href = '/admin-login.html';
         });
 
+        // Theme Toggle
         const toggle = document.getElementById('theme-toggle');
         toggle.addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
             localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         });
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+        if (localStorage.getElementById('theme') === 'light') document.body.classList.add('light-mode');
 
+        // Initial Load
         fetchEvents();
-        updateAnalytics();
     </script>
 </body>
 </html>
