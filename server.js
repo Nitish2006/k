@@ -8,98 +8,64 @@ import eventRoutes from './routes/events.js';
 import paymentRoutes from './routes/payments.js';
 import cors from 'cors';
 import path from 'path';
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import Admin from './models/Admin.js';
 
 const app = express();
 
-// Serve static files from 'frontend/src/pages' with landing.html as default
+// Serve static files
 const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, 'frontend', 'src', 'pages'), {
-    index: 'landing.html'
-}));
+app.use(express.static(path.join(__dirname, 'frontend', 'src', 'pages'), { index: 'landing.html' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/components', express.static(path.join(__dirname, 'frontend', 'src', 'components')));
 
-// Handle specific routes
-app.get('/', (req, res) => {
-    const filePath = path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html');
-    console.log('Serving landing.html from:', filePath);
+// General route handler function
+const serveFile = (res, filePath, errorMessage) => {
+    console.log(`Serving file: ${filePath}`);
     res.sendFile(filePath, (err) => {
         if (err) {
-            console.error('Error serving landing.html:', err.message);
-            res.status(404).send('landing.html not found');
+            console.error(`${errorMessage}:`, err.message);
+            res.status(404).send(`${errorMessage} not found`);
         }
     });
+};
+
+// Specific routes for serving HTML files
+app.get('/', (req, res) => {
+    serveFile(res, path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html'), 'landing.html');
 });
 
 app.get('/admin-login.html', (req, res) => {
-    const loginPath = path.join(__dirname, 'frontend', 'src', 'pages', 'admin-login.html');
-    console.log('Serving admin-login.html from:', loginPath);
-    res.sendFile(loginPath, (err) => {
-        if (err) {
-            console.error('Error serving admin-login.html:', err.message);
-            res.status(404).send('admin-login.html not found');
-        }
-    });
+    serveFile(res, path.join(__dirname, 'frontend', 'src', 'pages', 'admin-login.html'), 'admin-login.html');
 });
 
 app.get('/admin.html', (req, res) => {
-    const adminPath = path.join(__dirname, 'frontend', 'src', 'pages', 'admin.html');
-    console.log('Serving admin.html from:', adminPath);
-    res.sendFile(adminPath, (err) => {
-        if (err) {
-            console.error('Error serving admin.html:', err.message);
-            res.status(404).send('admin.html not found');
-        }
-    });
+    serveFile(res, path.join(__dirname, 'frontend', 'src', 'pages', 'admin.html'), 'admin.html');
 });
 
 app.get('/events.html', (req, res) => {
-    const eventsPath = path.join(__dirname, 'frontend', 'src', 'pages', 'events.html');
-    console.log('Serving events.html from:', eventsPath);
-    res.sendFile(eventsPath, (err) => {
-        if (err) {
-            console.error('Error serving events.html:', err.message);
-            res.status(404).send('events.html not found');
-        }
-    });
+    serveFile(res, path.join(__dirname, 'frontend', 'src', 'pages', 'events.html'), 'events.html');
 });
 
 app.get('/about.html', (req, res) => {
-    const aboutPath = path.join(__dirname, 'frontend', 'src', 'pages', 'about.html');
-    console.log('Serving about.html from:', aboutPath);
-    res.sendFile(aboutPath, (err) => {
-        if (err) {
-            console.error('Error serving about.html:', err.message);
-            res.status(404).send('about.html not found');
-        }
-    });
+    serveFile(res, path.join(__dirname, 'frontend', 'src', 'pages', 'about.html'), 'about.html');
 });
 
 // Middleware
 app.use(express.json());
 app.use(cors());
 
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/payments', paymentRoutes);
 
 // Catch-all route
 app.get('*', (req, res) => {
-    const filePath = path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html');
-    console.log('Serving catch-all landing.html from:', filePath);
-    res.sendFile(filePath, (err) => {
-        if (err) {
-            console.error('Error serving catch-all landing.html:', err.message);
-            res.status(404).send('landing.html not found');
-        }
-    });
+    serveFile(res, path.join(__dirname, 'frontend', 'src', 'pages', 'landing.html'), 'landing.html (catch-all)');
 });
 
-// Seeding function
+// Seeding function with error handling
 const seedAdmin = async () => {
     try {
         const existingAdmin = await Admin.findOne({ username: 'admin' });
@@ -114,16 +80,18 @@ const seedAdmin = async () => {
             password: hashedPassword,
         });
         await admin.save();
-        console.log('Default admin user seeded with username: admin, password: admin123');
+        console.log('Default admin user seeded: username: admin, password: admin123');
     } catch (error) {
         console.error('Admin seeding error:', error.message);
     }
 };
 
+// Start server function with enhanced error handling
 const startServer = async () => {
     try {
         await connectDB();
         await seedAdmin(); // Seed admin on startup
+
         const PORT = process.env.PORT || 3000;
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
