@@ -9,7 +9,7 @@ const router = express.Router();
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Store files in 'uploads' folder
+        cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -24,16 +24,21 @@ router.get('/', async (req, res) => {
         const events = await Event.find();
         res.json(events);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: `Error fetching events: ${error.message}` });
     }
 });
 
-// Add event (admin only, with file upload)
+// Add an event (admin only, with file upload)
 router.post('/', authMiddleware, upload.single('phonepeScreenshot'), async (req, res) => {
+    console.log('Request headers:', req.headers); // Debug headers
     if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied' });
 
     const { name, date, coordinatorName, coordinatorContact, poster, whatsappLink } = req.body;
     const phonepeScreenshot = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (!name || !date || !coordinatorName || !coordinatorContact || !poster || !whatsappLink) {
+        return res.status(400).json({ message: 'All fields are required except phonepeScreenshot' });
+    }
 
     try {
         const event = new Event({
@@ -42,26 +47,27 @@ router.post('/', authMiddleware, upload.single('phonepeScreenshot'), async (req,
             coordinatorName,
             coordinatorContact,
             poster,
-            phonepeScreenshot, // Store the file URL
-            whatsappLink // Match frontend field name
+            phonepeScreenshot,
+            whatsappLink
         });
         await event.save();
-        res.status(201).json(event);
+        res.status(201).json({ message: 'Event added successfully', event });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: `Error adding event: ${error.message}` });
     }
 });
 
-// Delete event (admin only)
+// Delete an event (admin only)
 router.delete('/:id', authMiddleware, async (req, res) => {
+    console.log('Delete request for ID:', req.params.id); // Debug ID
     if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied' });
 
     try {
         const event = await Event.findByIdAndDelete(req.params.id);
         if (!event) return res.status(404).json({ message: 'Event not found' });
-        res.json({ message: 'Event deleted' });
+        res.json({ message: 'Event deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: `Error deleting event: ${error.message}` });
     }
 });
 
