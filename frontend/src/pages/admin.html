@@ -158,7 +158,7 @@
         }
 
         // Add Event
-        document.getElementById('event-form').addEventListener('submit', async (e) => {
+        document.getElementById('event-form').addEventListener('submit-btn w-full py-2', async (e) => {
             e.preventDefault();
             const formData = new FormData();
             formData.append('eventName', document.getElementById('event-name').value);
