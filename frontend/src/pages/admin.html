@@ -75,6 +75,11 @@
             const eventGrid = document.getElementById('event-grid');
             const manageEventsError = document.getElementById('manage-events-error');
             try {
+                if (!token) {
+                    alert('Please log in to view events.');
+                    window.location.href = '/admin-login.html';
+                    return;
+                }
                 const response = await fetch('https://events2025.onrender.com', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -107,7 +112,7 @@
                     <p class="mb-1 text-gray-500">Coordinator: ${event.coordinatorName || 'N/A'}</p>
                     <p class="mb-1 text-gray-500">Contact: ${event.coordinatorContact || 'N/A'}</p>
                     <p class="mb-1 text-gray-500">Poster: <a href="${event.posterUrl || '#'}" target="_blank" class="text-primary-blue hover:underline">${event.posterUrl ? 'View' : 'N/A'}</a></p>
-                    <p class="mb-1 text-gray-500">PhonePe Screenshot: <a href="/uploads/${event.phonePeScreenshot || '#'}" target="_blank" class="text-primary-blue hover:underline">${event.phonePeScreenshot ? 'View' : 'N/A'}</a></p>
+                    <p class="mb-1 text-gray-500">PhonePe Screenshot: <a href="/Uploads/${event.phonePeScreenshot || '#'}" target="_blank" class="text-primary-blue hover:underline">${event.phonePeScreenshot ? 'View' : 'N/A'}</a></p>
                     <p class="mb-1 text-gray-500">WhatsApp: <a href="${event.whatsappGroupLink || '#'}" target="_blank" class="text-primary-blue hover:underline">${event.whatsappGroupLink ? 'Join' : 'N/A'}</a></p>
                     <button class="delete-btn w-full py-2 mt-3" data-id="${event._id}">Delete</button>
                     <div id="delete-error-${event._id}" class="error-message"></div>
@@ -158,23 +163,62 @@
         }
 
         // Add Event
-        document.getElementById('event-form').addEventListener('submit-btn w-full py-2', async (e) => {
+        document.getElementById('event-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const addError = document.getElementById('add-error');
+
+            // Check for authentication token
+            if (!token) {
+                alert('Please log in to add an event.');
+                window.location.href = '/admin-login.html';
+                return;
+            }
+
+            // Validate inputs
+            const eventDate = new Date(document.getElementById('event-date').value);
+            if (eventDate < new Date()) {
+                addError.textContent = 'Event date must be in the future.';
+                addError.style.display = 'block';
+                return;
+            }
+            const whatsappLink = document.getElementById('whatsapp-link').value;
+            try {
+                new URL(whatsappLink);
+            } catch {
+                addError.textContent = 'Please enter a valid WhatsApp group link.';
+                addError.style.display = 'block';
+                return;
+            }
+
+            // Validate file upload
+            const fileInput = document.getElementById('phonepe-screenshot');
+            const file = fileInput.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (!file) {
+                addError.textContent = 'Please upload a PhonePe screenshot.';
+                addError.style.display = 'block';
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                addError.textContent = 'Please upload an image file.';
+                addError.style.display = 'block';
+                return;
+            }
+            if (file.size > maxSize) {
+                addError.textContent = 'File size exceeds 5MB.';
+                addError.style.display = 'block';
+                return;
+            }
+
+            // Prepare form data
             const formData = new FormData();
             formData.append('eventName', document.getElementById('event-name').value);
             formData.append('eventDate', document.getElementById('event-date').value);
             formData.append('coordinatorName', document.getElementById('coordinator-name').value);
             formData.append('coordinatorContact', document.getElementById('coordinator-contact').value);
             formData.append('posterUrl', document.getElementById('event-poster').value);
-            formData.append('whatsappGroupLink', document.getElementById('whatsapp-link').value);
-            const fileInput = document.getElementById('phonepe-screenshot');
-            if (fileInput.files.length > 0) {
-                formData.append('phonePeScreenshot', fileInput.files[0]);
-            } else {
-                document.getElementById('add-error').textContent = 'Please upload a PhonePe screenshot.';
-                document.getElementById('add-error').style.display = 'block';
-                return;
-            }
+            formData.append('whatsappGroupLink', whatsappLink);
+            formData.append('phonePeScreenshot', file);
 
             try {
                 const response = await fetch('https://events2025.onrender.com/events', {
@@ -182,16 +226,18 @@
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP error! Status: ${response.status}`);
+                }
                 alert(data.message || 'Event added successfully!');
                 document.getElementById('event-form').reset();
+                addError.style.display = 'none';
                 fetchEvents();
-                document.getElementById('add-error').style.display = 'none';
             } catch (error) {
                 console.error('Submit error:', error);
-                document.getElementById('add-error').textContent = `Error adding event: ${error.message}`;
-                document.getElementById('add-error').style.display = 'block';
+                addError.textContent = `Error adding event: ${error.message}`;
+                addError.style.display = 'block';
             }
         });
 
@@ -208,7 +254,9 @@
             document.body.classList.toggle('light-mode');
             localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         });
-        if (localStorage.getElementById('theme') === 'light') document.body.classList.add('light-mode');
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
 
         // Initial Load
         fetchEvents();
